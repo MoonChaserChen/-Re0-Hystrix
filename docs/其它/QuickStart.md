@@ -185,4 +185,43 @@ public class HystrixTest {
 ```
 2秒后服务恢复，但是要大约5秒后服务调用才会成功，中间3秒处于熔断器打开状态，直接fallback。
 
+## SpringBoot-Hystrix
+1. 依赖
+```dependency
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
+    <version>2.2.7.RELEASE</version>
+</dependency>
+```
+2. EnableHystrix
+```java
+@SpringBootApplication
+@EnableHystrix
+public class SbApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(SbApplication.class, args);
+    }
+}
+```
+3. 使用
+```java
+@Service
+public class SimulateRemoteService {
+    @HystrixCommand(fallbackMethod = "defaultHello")
+    public String hello(String name) {
+        try {
+            Thread.sleep(1_200);
+        } catch (InterruptedException ignored) {
+        }
+        return "Hello, " + name + "!";
+    }
+
+    public String defaultHello(String name) {
+        return "Hello, " + name;
+    }
+}
+```
+
+
 
